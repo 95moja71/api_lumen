@@ -2,19 +2,19 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
+
+use App\Models\Course;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-class UserFactory extends Factory
+class CourseFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = User::class;
+    protected $model = Course::class;
 
     /**
      * Define the model's default state.
@@ -23,14 +23,13 @@ class UserFactory extends Factory
      */
     public function definition()
     {
-
         return [
 
-            'id' => rand(1, 10),
-            'password' => Hash::make('12345678'),
-            'remember_token' => Str::random(10),
-            'name' => $this->faker->name,
-            'email' => $this->faker->unique()->safeEmail,
+            'title' => $this->faker->sentence(),
+            'body' => $this->faker->paragraph(5),
+            'price' => $this->faker->numberBetween(1000, 10000),
+            'image' => $this->faker->imageUrl(),
+
         ];
     }
 }
