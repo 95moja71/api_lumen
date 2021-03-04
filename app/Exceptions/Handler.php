@@ -6,7 +6,9 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -28,7 +30,7 @@ class Handler extends ExceptionHandler
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
-     * @param  \Throwable  $exception
+     * @param \Throwable $exception
      * @return void
      *
      * @throws \Exception
@@ -41,14 +43,30 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Throwable  $exception
-     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     * @param \Illuminate\Http\Request $request
+     * @param \Throwable $exception
      *
      * @throws \Throwable
      */
     public function render($request, Throwable $exception)
     {
+        if ($exception instanceof ModelNotFoundException || $exception instanceof NotFoundHttpException) {
+            return $this->exceptionMessage($request, $exception);
+        }
         return parent::render($request, $exception);
+    }
+
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param ModelNotFoundException $exception
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response
+     * @throws Throwable
+     */
+    public function exceptionMessage(\Illuminate\Http\Request $request, ModelNotFoundException $exception)
+    {
+        return $request->expectsJson()
+            ? response()->json(['data' => 'not found', 'status' => 'success'], Response::HTTP_NOT_FOUND)
+            : parent::render($request, $exception);
     }
 }
