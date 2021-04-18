@@ -4,6 +4,7 @@
 
 $router->get('/', 'CourseController@index');
 
+
 $router->get('/course', 'CourseController@single');
 $router->post('/course', 'CourseController@store');
 

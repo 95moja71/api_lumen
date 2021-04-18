@@ -3,4 +3,4 @@
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 
-$router->get('/vel', 'CourseController@index');
+$router->get('/', 'CourseController@index');
